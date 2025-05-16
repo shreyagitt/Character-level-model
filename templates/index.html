@@ -1,41 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Character-Level Text Generator</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TextWizard.AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <!-- Navbar / Taskbar -->
-    <div class="navbar">🧠 Text Generator Pro</div>
+  <div class="container">
+    <header>
+      <h1>TextWizard.<span class="accent">AI</span></h1>
+      <nav>
+        <a href="#">Home</a>
+        <a href="#">About</a>
+        <a href="#">API</a>
+      </nav>
+    </header>
 
-    <!-- Main UI -->
-    <div class="container">
-        <div class="card">
-            <h1>Generate Text Character-by-Character</h1>
-            <textarea id="inputText" rows="6" placeholder="Type some text here..."></textarea>
-            <button onclick="generateText()">Generate</button>
-            <div id="generatedText"></div>
+    <main>
+      <h2>AI Text Assistant Dashboard</h2>
+      <form id="textForm">
+        <textarea name="input_text" placeholder="Type or paste your text here..."></textarea>
+        <div class="checkboxes">
+          <label><input type="checkbox" name="spell"> Spell Correction</label>
+          <label><input type="checkbox" name="sentiment"> Character-level Sentiment Proxy</label>
+          <label><input type="checkbox" name="autocomplete"> Text Autocompletion</label>
+          <label><input type="checkbox" name="generate"> Generate New Text</label>
         </div>
-    </div>
+        <button type="submit">Generate</button>
+      </form>
 
-    <!-- JS Function -->
-    <script>
-        async function generateText() {
-            const inputText = document.getElementById("inputText").value;
-            const response = await fetch('/generate', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ input_text: inputText })
-            });
-            const result = await response.json();
-            document.getElementById("generatedText").textContent = result.generated_text;
-        }
-    </script>
+      <section id="outputSection">
+        <h3>Output</h3>
+        <p id="outputText"></p>
+        <div class="actions">
+          <button type="button" onclick="retry()">🔄 Retry</button>
+          <button type="button" onclick="copyText()">📋 Copy</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const form = document.getElementById("textForm");
+    const outputText = document.getElementById("outputText");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const response = await fetch("/process", {
+        method: "POST",
+        body: formData,
+      });
+      const result = await response.json();
+      outputText.textContent = result.output;
+    });
+
+    function retry() {
+      document.getElementById("textForm").reset();
+      outputText.textContent = "";
+    }
+
+    function copyText() {
+      navigator.clipboard.writeText(outputText.textContent);
+      alert("Copied to clipboard!");
+    }
+  </script>
 </body>
 </html>
+
 
 
