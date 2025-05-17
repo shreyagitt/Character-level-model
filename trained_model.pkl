@@ -1,0 +1,1 @@
+model.save('char_rnn_model')
